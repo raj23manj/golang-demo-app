@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/raj23manj/demo-app-golang/domain/utils"
+	"github.com/raj23manj/demo-app-golang/utils"
 )
 
 var (
