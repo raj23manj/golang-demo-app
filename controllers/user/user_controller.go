@@ -1,4 +1,4 @@
-package controllers
+package user
 
 import (
 	"net/http"
@@ -13,20 +13,20 @@ func GetUser(c *gin.Context) {
 	userIdParam := c.Param("user_id")
 	userId, err := (strconv.ParseInt(userIdParam, 10, 64))
 	if err != nil {
-		apiError := &utils.ApplicationError{
+		apiErr := &utils.ApplicationError{
 			Message:    "user_id must be a number$$$",
 			StatusCode: http.StatusBadRequest,
 			Code:       "bad_request",
 		}
-		c.JSON(apiError.StatusCode, apiError)
+		utils.RespondError(c, apiErr)
 		return
 	}
 
-	user, apiError := services.GetUser(userId)
-	if apiError != nil {
-		c.JSON(apiError.StatusCode, apiError)
+	user, apiErr := services.GetUser(userId)
+	if apiErr != nil {
+		utils.RespondError(c, apiErr)
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	utils.Respond(c, http.StatusOK, user)
 }
