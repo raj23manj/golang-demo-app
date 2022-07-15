@@ -22,7 +22,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	user, apiErr := services.GetUser(userId)
+	user, apiErr := services.UserService.GetUser(userId)
 	if apiErr != nil {
 		utils.RespondError(c, apiErr)
 		return
