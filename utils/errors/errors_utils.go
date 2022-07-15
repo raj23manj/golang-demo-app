@@ -7,9 +7,9 @@ import (
 )
 
 type ApiError interface {
-	EStatus() int
-	EMessage() string
-	EError() string
+	GetStatus() int
+	GetMessage() string
+	GetError() string
 }
 
 type apiError struct {
@@ -18,15 +18,15 @@ type apiError struct {
 	Error   string `json:"error,omitempty"`
 }
 
-func (e *apiError) EStatus() int {
+func (e *apiError) GetStatus() int {
 	return e.Status
 }
 
-func (e *apiError) EMessage() string {
+func (e *apiError) GetMessage() string {
 	return e.Message
 }
 
-func (e *apiError) EError() string {
+func (e *apiError) GetError() string {
 	return e.Error
 }
 

@@ -15,8 +15,8 @@ func Respond(c *gin.Context, status int, body interface{}) {
 
 func RespondError(c *gin.Context, err errors.ApiError) {
 	if c.GetHeader("Accept") == "application/xml" {
-		c.XML(err.EStatus(), err)
+		c.XML(err.GetStatus(), err)
 		return
 	}
-	c.JSON(err.EStatus(), err)
+	c.JSON(err.GetStatus(), err)
 }
