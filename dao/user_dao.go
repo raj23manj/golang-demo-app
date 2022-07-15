@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/raj23manj/demo-app-golang/domain"
-	"github.com/raj23manj/demo-app-golang/utils/app_errors"
+	"github.com/raj23manj/demo-app-golang/utils/errors"
 )
 
 type userDao struct{}
 
 type userDaoInterface interface {
-	GetUser(userId int64) (*domain.User, *app_errors.ApplicationError)
+	GetUser(userId int64) (*domain.User, *errors.ApplicationError)
 }
 
 var (
@@ -26,10 +26,10 @@ func init() {
 	UserDao = &userDao{}
 }
 
-func (u *userDao) GetUser(userId int64) (*domain.User, *app_errors.ApplicationError) {
+func (u *userDao) GetUser(userId int64) (*domain.User, *errors.ApplicationError) {
 	user := users[userId]
 	if user == nil {
-		return nil, &app_errors.ApplicationError{
+		return nil, &errors.ApplicationError{
 			Message:    fmt.Sprintf("user %v does not exists", userId),
 			StatusCode: http.StatusNotFound,
 			Code:       "not_found",

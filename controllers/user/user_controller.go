@@ -6,15 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/raj23manj/demo-app-golang/services"
-	"github.com/raj23manj/demo-app-golang/utils/app_errors"
 	"github.com/raj23manj/demo-app-golang/utils/controller"
+	"github.com/raj23manj/demo-app-golang/utils/errors"
 )
 
 func GetUser(c *gin.Context) {
 	userIdParam := c.Param("user_id")
 	userId, err := (strconv.ParseInt(userIdParam, 10, 64))
 	if err != nil {
-		apiErr := &app_errors.ApplicationError{
+		apiErr := &errors.ApplicationError{
 			Message:    "user_id must be a number$$$",
 			StatusCode: http.StatusBadRequest,
 			Code:       "bad_request",
