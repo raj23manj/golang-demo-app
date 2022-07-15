@@ -2,16 +2,15 @@ package dao
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/raj23manj/demo-app-golang/domain"
-	"github.com/raj23manj/demo-app-golang/utils/errors"
+	"github.com/raj23manj/demo-app-golang/dto"
 )
 
 type userDao struct{}
 
 type userDaoInterface interface {
-	GetUser(userId int64) (*domain.User, *errors.ApplicationError)
+	GetUser(userId int64) (*domain.User, *dto.DtoErrorResponse)
 }
 
 var (
@@ -26,13 +25,11 @@ func init() {
 	UserDao = &userDao{}
 }
 
-func (u *userDao) GetUser(userId int64) (*domain.User, *errors.ApplicationError) {
+func (u *userDao) GetUser(userId int64) (*domain.User, *dto.DtoErrorResponse) {
 	user := users[userId]
 	if user == nil {
-		return nil, &errors.ApplicationError{
-			Message:    fmt.Sprintf("user %v does not exists", userId),
-			StatusCode: http.StatusNotFound,
-			Code:       "not_found",
+		return nil, &dto.DtoErrorResponse{
+			Message: fmt.Sprintf("user %v does not exists", userId),
 		}
 	}
 	return user, nil

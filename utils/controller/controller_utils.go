@@ -13,10 +13,10 @@ func Respond(c *gin.Context, status int, body interface{}) {
 	c.JSON(status, body)
 }
 
-func RespondError(c *gin.Context, err *errors.ApplicationError) {
+func RespondError(c *gin.Context, err errors.ApiError) {
 	if c.GetHeader("Accept") == "application/xml" {
-		c.XML(err.StatusCode, err)
+		c.XML(err.EStatus(), err)
 		return
 	}
-	c.JSON(err.StatusCode, err)
+	c.JSON(err.EStatus(), err)
 }

@@ -14,11 +14,7 @@ func GetUser(c *gin.Context) {
 	userIdParam := c.Param("user_id")
 	userId, err := (strconv.ParseInt(userIdParam, 10, 64))
 	if err != nil {
-		apiErr := &errors.ApplicationError{
-			Message:    "user_id must be a number$$$",
-			StatusCode: http.StatusBadRequest,
-			Code:       "bad_request",
-		}
+		apiErr := errors.NewBadRequestError("user id must be a number!!!")
 		controller.RespondError(c, apiErr)
 		return
 	}
