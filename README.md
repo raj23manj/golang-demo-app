@@ -1,6 +1,7 @@
 # golang-demo-app
 
 # Dev :
+ - `go mod download` to install deps
  - https://github.com/gin-gonic/gin/issues/477
  - nodemon --exec go run main.go --signal SIGTERM
 
@@ -12,3 +13,6 @@
   * migrate -database ${POSTGRESQL_GOLANG_URL} -path db/migrations up
   * migrate -database 'postgres://postgres:password@localhost:5432/golang_demo?sslmode=disable' -path db/migrations up
   * when becomes dirty => migrate -database ${POSTGRESQL_GOLANG_URL} -path db/migrations force 1
+
+# Log rocket
+- https://blog.logrocket.com/how-to-build-a-rest-api-with-golang-using-gin-and-gorm/
