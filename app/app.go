@@ -1,10 +1,8 @@
 package app
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
-	"github.com/raj23manj/demo-app-golang/db/database"
+	"github.com/raj23manj/demo-app-golang/db/connection"
 )
 
 var (
@@ -16,15 +14,11 @@ func init() {
 }
 
 func StartApp() {
-	// testing DB connection
-	_, err := database.Database()
-
-	if err != nil {
-		log.Println(err)
-	}
-
+	// DB connection init
+	connection.Database()
+	// routing urls
 	mapUrls()
-
+	// running the server
 	if err := router.Run("localhost:8080"); err != nil {
 		panic(err)
 	}
