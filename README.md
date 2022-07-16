@@ -11,3 +11,4 @@
   * export POSTGRESQL_GOLANG_URL='postgres://postgres:password@localhost:5432/golang_demo?sslmode=disable'
   * migrate -database ${POSTGRESQL_GOLANG_URL} -path db/migrations up
   * migrate -database 'postgres://postgres:password@localhost:5432/golang_demo?sslmode=disable' -path db/migrations up
+  * when becomes dirty => migrate -database ${POSTGRESQL_GOLANG_URL} -path db/migrations force 1
