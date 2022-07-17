@@ -8,4 +8,6 @@ import (
 func mapUrls() {
 	router.GET("/users/:user_id", user.GetUser)
 	router.POST("/tenants", tenant.Create)
+	router.GET("/tenants/:tenant_id", tenant.GetTenant)
+	router.GET("/tenants", tenant.GetTenants)
 }

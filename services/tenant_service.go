@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/raj23manj/demo-app-golang/dao"
-	"github.com/raj23manj/demo-app-golang/db/connection"
 	"github.com/raj23manj/demo-app-golang/domain"
 	"github.com/raj23manj/demo-app-golang/dto"
 	"github.com/raj23manj/demo-app-golang/utils/errors"
@@ -27,13 +26,12 @@ func init() {
 }
 
 func (t *tenantService) GetTenants() (*[]domain.Tenant, errors.ApiError) {
-	tenants := []domain.Tenant{}
-	result := connection.DB.Find(&tenants)
-	if result.Error != nil {
-		return nil, errors.NewApiError(http.StatusNotFound, "not able to retrive all records!!!")
+	result, err := dao.TenantDao.GetTenants()
+	if err != nil {
+		return nil, errors.NewApiError(http.StatusNotFound, err.GetMessage())
 	}
 
-	return &tenants, nil
+	return result, nil
 }
 
 func (t *tenantService) GetTenant(id uint64) (*domain.Tenant, errors.ApiError) {

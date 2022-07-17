@@ -13,6 +13,7 @@ type tenantDao struct{}
 type tenantDaoInterface interface {
 	Create(tenant *dto.CreateTenantRequest) (*domain.Tenant, *dto.DtoErrorResponse)
 	GetTenant(id uint64) (*domain.Tenant, *dto.DtoErrorResponse)
+	GetTenants() (*[]domain.Tenant, *dto.DtoErrorResponse)
 }
 
 var (
@@ -51,4 +52,16 @@ func (t *tenantDao) GetTenant(id uint64) (*domain.Tenant, *dto.DtoErrorResponse)
 	}
 
 	return &tenant, nil
+}
+
+func (t *tenantDao) GetTenants() (*[]domain.Tenant, *dto.DtoErrorResponse) {
+	tenants := []domain.Tenant{}
+	result := connection.DB.Find(&tenants)
+	if result.Error != nil {
+		return nil, &dto.DtoErrorResponse{
+			Message: fmt.Sprintf("unable to retrive all records"),
+		}
+	}
+
+	return &tenants, nil
 }
