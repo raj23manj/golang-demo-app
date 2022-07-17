@@ -6,6 +6,7 @@ import (
 	"github.com/raj23manj/demo-app-golang/dao"
 	"github.com/raj23manj/demo-app-golang/db/connection"
 	"github.com/raj23manj/demo-app-golang/domain"
+	"github.com/raj23manj/demo-app-golang/dto"
 	"github.com/raj23manj/demo-app-golang/utils/errors"
 )
 
@@ -14,7 +15,7 @@ type tenantService struct{}
 type tenantServiceInterface interface {
 	GetTenants() (*[]domain.Tenant, errors.ApiError)
 	GetTenant(id uint64) (*domain.Tenant, errors.ApiError)
-	Create(tenant *domain.Tenant) (*domain.Tenant, errors.ApiError)
+	Create(tenant *dto.CreateTenantRequest) (*domain.Tenant, errors.ApiError)
 }
 
 var (
@@ -44,7 +45,7 @@ func (t *tenantService) GetTenant(id uint64) (*domain.Tenant, errors.ApiError) {
 	return result, nil
 }
 
-func (t *tenantService) Create(tenant *domain.Tenant) (*domain.Tenant, errors.ApiError) {
+func (t *tenantService) Create(tenant *dto.CreateTenantRequest) (*domain.Tenant, errors.ApiError) {
 	result, err := dao.TenantDao.Create(tenant)
 	if err != nil {
 		return nil, errors.NewApiError(http.StatusNotFound, err.GetMessage())

@@ -11,7 +11,7 @@ import (
 type tenantDao struct{}
 
 type tenantDaoInterface interface {
-	Create(tenant *domain.Tenant) (*domain.Tenant, *dto.DtoErrorResponse)
+	Create(tenant *dto.CreateTenantRequest) (*domain.Tenant, *dto.DtoErrorResponse)
 	GetTenant(id uint64) (*domain.Tenant, *dto.DtoErrorResponse)
 }
 
@@ -23,8 +23,13 @@ func init() {
 	TenantDao = &tenantDao{}
 }
 
-func (t *tenantDao) Create(tenant *domain.Tenant) (*domain.Tenant, *dto.DtoErrorResponse) {
-	result := connection.DB.Create(tenant)
+func (t *tenantDao) Create(tenant *dto.CreateTenantRequest) (*domain.Tenant, *dto.DtoErrorResponse) {
+	newTenant := &domain.Tenant{
+		Name:      tenant.Name,
+		Active:    tenant.Active,
+		ExpiresIn: tenant.ExpiresIn,
+	}
+	result := connection.DB.Create(newTenant)
 	if result.Error != nil {
 		fmt.Println(result.Error)
 
@@ -33,7 +38,7 @@ func (t *tenantDao) Create(tenant *domain.Tenant) (*domain.Tenant, *dto.DtoError
 		}
 	}
 
-	return tenant, nil
+	return newTenant, nil
 }
 
 func (t *tenantDao) GetTenant(id uint64) (*domain.Tenant, *dto.DtoErrorResponse) {
