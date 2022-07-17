@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/raj23manj/demo-app-golang/dto"
+	"github.com/raj23manj/demo-app-golang/mappers"
 	"github.com/raj23manj/demo-app-golang/services"
 	"github.com/raj23manj/demo-app-golang/utils/controller"
 )
@@ -24,5 +25,7 @@ func Create(c *gin.Context) {
 		return
 	}
 
-	controller.Respond(c, http.StatusOK, newTenant)
+	mappedResult := mappers.TenantMapper.MapData(newTenant)
+
+	controller.Respond(c, http.StatusOK, mappedResult)
 }
