@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/raj23manj/demo-app-golang/db/connection"
+	"github.com/raj23manj/demo-app-golang/middlewares"
 )
 
 var (
@@ -22,6 +23,8 @@ func StartApp() {
 	// loggining to a file
 	f, _ := os.Create("gin.log")
 	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	// middlewares
+	router.Use(middlewares.AuthMiddleware())
 	// routing urls
 	mapUrls()
 	// running the server
