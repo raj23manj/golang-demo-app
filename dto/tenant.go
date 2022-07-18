@@ -5,7 +5,7 @@ import "time"
 type CreateTenantRequest struct {
 	Name      string                 `json:"name" binding:"required"`
 	Active    bool                   `json:"active" binding:"required"`
-	ExpiresIn map[string]interface{} `json:"expires_in" binding:"required"`
+	ExpiresIn map[string]interface{} `json:"expires_in" binding:"required,dive,keys,oneof= days"`
 }
 
 type TenantMapperDto struct {
