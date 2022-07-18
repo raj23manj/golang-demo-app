@@ -4,26 +4,31 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/raj23manj/demo-app-golang/dto"
 	"github.com/raj23manj/demo-app-golang/mappers"
 	"github.com/raj23manj/demo-app-golang/services"
 	"github.com/raj23manj/demo-app-golang/utils/controller"
-	"github.com/raj23manj/demo-app-golang/utils/errors"
 )
 
 func Create(c *gin.Context) {
-	tenant := &dto.CreateTenantRequest{
-		Name:   "new_tenant",
-		Active: true,
-		ExpiresIn: map[string]interface{}{
-			"days": 5,
-		},
+	// tenant := &dto.CreateTenantRequest{
+	// 	Name:   "new_tenant",
+	// 	Active: true,
+	// 	ExpiresIn: map[string]interface{}{
+	// 		"days": 5,
+	// 	},
+	// }
+
+	tenant := dto.CreateTenantRequest{}
+
+	if err := c.ShouldBindJSON(&tenant); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
-	newTenant, apiErr := services.TenantService.Create(tenant)
+	newTenant, apiErr := services.TenantService.Create(&tenant)
 	if apiErr != nil {
 		controller.RespondError(c, apiErr)
 		return
@@ -34,15 +39,22 @@ func Create(c *gin.Context) {
 }
 
 func GetTenant(c *gin.Context) {
-	tenantIdParam := c.Param("tenant_id")
-	tenantId, err := (strconv.ParseInt(tenantIdParam, 10, 64))
-	if err != nil {
-		apiErr := errors.NewBadRequestError("tenant id must be a number!!!")
-		controller.RespondError(c, apiErr)
+	// without validators
+	// tenantIdParam := c.Param("tenant_id")
+	// tenantId, err := (strconv.ParseInt(tenantIdParam, 10, 64))
+	// if err != nil {
+	// 	apiErr := errors.NewBadRequestError("tenant id must be a number!!!")
+	// 	controller.RespondError(c, apiErr)
+	// 	return
+	// }
+
+	tenantGetRequest := dto.TenantGetRequest{}
+	if err := c.ShouldBindUri(&tenantGetRequest); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	tenant, apiErr := services.TenantService.GetTenant(uint64(tenantId))
+	tenant, apiErr := services.TenantService.GetTenant(uint64(tenantGetRequest.TenantId))
 	if apiErr != nil {
 		controller.RespondError(c, apiErr)
 		return
@@ -59,7 +71,7 @@ func GetTenants(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("tenants %v", reflect.TypeOf(tenants))
+	fmt.Println("tenants %v", reflect.TypeOf(*tenants))
 
 	fmt.Println("tenants %v", *tenants)
 
