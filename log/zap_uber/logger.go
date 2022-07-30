@@ -2,34 +2,69 @@ package zap_uber
 
 import (
 	"fmt"
+	"net/url"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	lumberjack "gopkg.in/natefinch/lumberjack.v2"
 )
 
 var (
 	Log *zap.Logger
 )
 
+type lumberjackSink struct {
+	*lumberjack.Logger
+}
+
+func (lumberjackSink) Sync() error {
+	return nil
+}
+
+// https://gist.github.com/rnyrnyrny/282fe705d6e8dc012e482582d7c8ec0b
 func init() {
+
+	logfile := "tmp/app.log"
+
 	logConfig := zap.Config{
-		OutputPaths: []string{"stdout"},
+		OutputPaths: []string{"stdout", logfile},
 		Encoding:    "json",
 		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
 		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey:   "msg",
-			LevelKey:     "level",
-			TimeKey:      "time",
-			EncodeTime:   zapcore.ISO8601TimeEncoder,
-			EncodeLevel:  zapcore.LowercaseLevelEncoder,
-			EncodeCaller: zapcore.ShortCallerEncoder,
+			TimeKey:        "ts",
+			LevelKey:       "level",
+			NameKey:        "logger",
+			CallerKey:      "caller",
+			MessageKey:     "msg",
+			StacktraceKey:  "stacktrace",
+			LineEnding:     zapcore.DefaultLineEnding,
+			EncodeLevel:    zapcore.LowercaseLevelEncoder,
+			EncodeTime:     zapcore.ISO8601TimeEncoder,
+			EncodeDuration: zapcore.SecondsDurationEncoder,
+			EncodeCaller:   zapcore.ShortCallerEncoder,
 		},
 	}
-	var err error
-	Log, err = logConfig.Build()
+
+	ll := lumberjack.Logger{
+		Filename:   logfile,
+		MaxSize:    1024, //MB
+		MaxBackups: 30,
+		MaxAge:     90, //days
+		Compress:   true,
+	}
+
+	zap.RegisterSink("lumberjack", func(*url.URL) (zap.Sink, error) {
+		return lumberjackSink{
+			Logger: &ll,
+		}, nil
+	})
+
+	_log, err := logConfig.Build()
 	if err != nil {
 		panic(err)
 	}
+	zap.ReplaceGlobals(_log)
+	Log = _log
 }
 
 func Field(key string, value interface{}) zap.Field {

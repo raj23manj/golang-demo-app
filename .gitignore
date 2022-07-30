@@ -16,3 +16,5 @@
 
 # ignoring log files
 gin.log
+
+tmp/
