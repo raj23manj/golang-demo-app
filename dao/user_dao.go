@@ -25,6 +25,8 @@ func init() {
 	UserDao = &userDao{}
 }
 
+// why pass *domain.user
+// section2, package organization, 17:25
 func (u *userDao) GetUser(userId int64) (*domain.User, *dto.DtoErrorResponse) {
 	user := users[userId]
 	if user == nil {

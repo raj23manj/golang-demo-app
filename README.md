@@ -16,3 +16,13 @@
 
 # Log rocket
 - https://blog.logrocket.com/how-to-build-a-rest-api-with-golang-using-gin-and-gorm/
+
+
+# Timelines
+
+1) why pass *domain.user
+  * section2, package organization, 17:25
+2) Basic setup:
+  * section 2, package organization
+3) Error handling
+  * section 2, 32:31
