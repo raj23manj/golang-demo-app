@@ -26,3 +26,14 @@
   * section 2, package organization
 3) Error handling
   * section 2, 32:31
+4) Testing unit/integration/Functional test
+            85/10/5
+  * Section 3, intro to testing
+5) Don't use panic
+  * section 3, unit tests, 17:53
+6) Using var in the service for exposing
+  * Testing in go, 8:01 (how to structure go artifacts and mocks)
+  * assume struct is like a class, and methods defined on it and exposing them
+  * use interface for mocks 19:31
+  * using init() menthod for mock 28:02
+  * making dynamic functions for every test
