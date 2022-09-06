@@ -18,6 +18,9 @@
 - https://blog.logrocket.com/how-to-build-a-rest-api-with-golang-using-gin-and-gorm/
 
 
+# repo
+federicoleon/golang-tutorial
+https://github.com/federicoleon
 # Timelines
 
 1) why pass *domain.user
@@ -37,3 +40,17 @@
   * use interface for mocks 19:31
   * using init() menthod for mock 28:02
   * making dynamic functions for every test
+7) gin.new => returns a gin instance without any middle attached,
+  * Http framework 7:20
+  * gin.Default has loggers & recovery middleware attached
+8) How to fect query params http framework
+  * 16:50
+9) Marshal, takess a input interface and create a valid json string
+  * 12:26 defining our domain structs
+  * 20:49 unmarshalling
+  * building nested structs 30:43
+10) Building a rest client section4
+  * Rest api calls 23:17
+  * why to use pointers in return types of a function 30:37
+  * read from response body ioutil.ReadAll(response.body) 36:13
+  * use defer.Body.close() to close the body 41:47
