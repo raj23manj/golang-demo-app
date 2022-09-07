@@ -17,7 +17,8 @@
 # Log rocket
 - https://blog.logrocket.com/how-to-build-a-rest-api-with-golang-using-gin-and-gorm/
 
-
+# Todo
+ * coverage
 # repo
 federicoleon/golang-tutorial
 https://github.com/federicoleon
@@ -54,3 +55,13 @@ https://github.com/federicoleon
   * why to use pointers in return types of a function 30:37
   * read from response body ioutil.ReadAll(response.body) 36:13
   * use defer.Body.close() to close the body 41:47
+  * Always build your own rest client it is easy to handle situations. 47:01
+11) writing own custom mocks(mocking native apis)
+  * 7:56(try writing mock like section 3 testing in go)
+  * for body need a invalid closer , 24:46
+  * for body response with a closer, ioutil.NopCloser() 29:05
+12) Building a skeletal controller, service, error, provider(putting all together)
+  * 8:59
+  * 22:28 adding env/secrets
+13) Testing: unit & integration tests
+  * 5:34, initalizing things before testing using TestMain()
