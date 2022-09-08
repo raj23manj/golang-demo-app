@@ -65,3 +65,5 @@ https://github.com/federicoleon
   * 22:28 adding env/secrets
 13) Testing: unit & integration tests
   * 5:34, initalizing things before testing using TestMain()
+  * Testing controller mocking context 21:51
+  * Mocking headers 54:07
