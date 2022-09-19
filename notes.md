@@ -75,3 +75,50 @@ https://pkg.go.dev/std => std packages
    * writer interface
    * sort & sort custom
    * bcrypt
+* Concurrency
+  * wait group
+    * Go runtime package 50:00 OS, arch, cps, goroutines
+    * init() 3:58
+    * package sync
+  * MethodSets
+    * https://stackoverflow.com/questions/33587227/method-sets-pointer-vs-value-receiver
+    * 11:40, methodset with interfaces not working with pointers
+    * https://play.golang.org/p/G3lEy-4Mc8  for  below example
+    ```
+      package main
+
+      import (
+        "fmt"
+        "math"
+      )
+
+      type circle struct {
+        radius float64
+      }
+
+      type shape interface {
+        area() float64
+      }
+
+      func (c *circle) area() float64 { // func (c circle) // works
+        return math.Pi * c.radius * c.radius
+      }
+
+      func info(s shape) {
+        fmt.Println("area", s.area())
+      }
+
+      func main() {
+        // c:= &circle{5} // works
+        c := circle{5}
+        //info(c) // https://gobyexample.com/interfaces how to use interface
+        // info(&c) works with (c *circle)
+        fmt.Println(c.area())
+      }
+    ```
+    * https://gobyexample.com/interfaces how to use interfaces
+
+  * Documentation
+  * Race Condition
+  * Mutex(mutual exclusion lock)
+  * Atomic
