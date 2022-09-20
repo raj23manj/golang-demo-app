@@ -234,20 +234,22 @@ https://pkg.go.dev/std => std packages
     * get computation done and fan in all the results to main thread
     * https://go.dev/play/p/_CyyXQBCHe
     * https://go.dev/play/p/buy30qw5MM => rob pike, return channles from functions
-
+     ```
       -------
              \
       -------------  main thread
              /
       -------
+    ```
   * Fan Out & throttling
     * 3:17, closure concept
     * https://go.dev/play/p/iU7Oee2nm7, launches n go routines
     * throttling go routines
+    ```
           -----------
          /
     ------------------
          \
           -----------
-
+    ```
   * Context
