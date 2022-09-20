@@ -253,3 +253,6 @@ https://pkg.go.dev/std => std packages
           -----------
     ```
   * Context
+    * 2:07 (https://go.dev/blog/context), In Go servers, each incoming request is handled in its own goroutine. Request handlers often start additional goroutines to access backends such as databases and RPC services. The set of goroutines working on a request typically needs access to request-specific values such as the identity of the end user, authorization tokens, and the request’s deadline. When a request is canceled or times out, all the goroutines working on that request should exit quickly so the system can reclaim any resources they are using
+
+* Error Handling
