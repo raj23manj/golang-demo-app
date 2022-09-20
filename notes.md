@@ -204,13 +204,50 @@ https://pkg.go.dev/std => std packages
         }
       }
       // to make sure we close the channels, but this will be garbage collected if it was within this function
-      close(e)
-      close(o)
+      close(e) // sends a value 0
+      close(o)  // sends a value 0
       q <- 0
     }
    ```
-   * running the program with race flag 9:20
+    * running the program with race flag 9:20
+
   * Comma ok idiom
+    * 0 is a false in go, 4:14
+    * main program
+    ```
+    func main() {
+      c := make(chan int)
+      go func() {
+        c <- 42 // send 0 it will be 0 true
+        close(c) // send 0 and false, 5:56
+      }()
+
+      v, ok := <-c
+      fmt.Println(v, ok) // 42 true
+
+      v, ok = <-c
+      fmt.Println(v, ok) // 0 false
+
+    }
+    ```
   * Fan In
-  * Fan Out
+    * get computation done and fan in all the results to main thread
+    * https://go.dev/play/p/_CyyXQBCHe
+    * https://go.dev/play/p/buy30qw5MM => rob pike, return channles from functions
+
+      -------
+             \
+      -------------  main thread
+             /
+      -------
+  * Fan Out & throttling
+    * 3:17, closure concept
+    * https://go.dev/play/p/iU7Oee2nm7, launches n go routines
+    * throttling go routines
+          -----------
+         /
+    ------------------
+         \
+          -----------
+
   * Context
