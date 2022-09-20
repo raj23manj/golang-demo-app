@@ -64,6 +64,8 @@ https://pkg.go.dev/std => std packages
   ex: db connection, file, I/O, network, response body close, channels ...
 
 # Todd Go
+* To get the type of the variable
+  fmt.Println("%T")
 * Pointers
   * method sets
 * Application
@@ -119,6 +121,96 @@ https://pkg.go.dev/std => std packages
     * https://gobyexample.com/interfaces how to use interfaces
 
   * Documentation
+    * 4:17, Go encourages "Do not communicate by sharing memory, instead, share memory by comunnicating"
+    * channels(values are passed around on channels) is the way to go. 4:43 => dataraces cannot occur by design as one go routine has access to the value at any given time. => https://go.dev/doc/effective_go#concurrency
   * Race Condition
+    * time.sleep() / runtime.Gosched() (run anything you want), 6:00
   * Mutex(mutual exclusion lock)
   * Atomic
+    * similar to mutex, but like a  wrapper
+
+* Channels
+  * Notes:
+    * to make the main program wait for exection and keep blocking
+       1) use wait groups
+       2) use a recieve channle in the main thread
+       3) use range(will wait until the channle is closed)
+       4) use select
+  * understanding channels
+    * 4:00, pass a baton at a same time.
+    * send and recieve blocks until there is a channel on the other side
+    * buffered channels 8:00,
+    * try to stay away from buffered channels, use unbuffered channels. 10:40
+  * Directional channels
+  * Using Channels
+    * 3:34, syntax for using send and receive channels
+  * Range
+    * range will keep looping over a channel, until a channel is closed. 1:20
+    * main program
+      ```
+        func main() {
+          c := make(chan int)
+          go foo(c)
+
+          for v := range c {
+            fmt.Println(v)
+          }
+        }
+
+        func foo(c chan<- int) {
+          for i:=0; i < 100; i++ {
+            c <- 42
+          }
+          close(c) // explicitly close, for range to quit
+        }
+      ```
+      * when using range with channels, and we dont close the channel then we get a deadlock error
+  * Select
+   * it is like a switch statement
+   * always need a case to hanlde quit the channel
+   * main program
+   ```
+    func main() {
+      eve := make(chan int)
+      odd := make(chan int)
+      quit := make(chan int)
+
+      go send(eve, odd, quit)
+
+      receive(eve, odd, quit)
+    }
+
+    func receive(eve, odd, quit <-chan int) {
+      for {
+        select {
+          case v := <- eve:
+            fmt.Println("from the even:", v)
+          case v := <- odd:
+            fmt.Println("from the odd:", v)
+          case v := <- quit:
+            fmt.Println("quit:", v)
+            // close(quit)
+            return
+        }
+      }
+    }
+
+    func send(e, o, q, chan<- int){
+      for i:=0; i < 100; i++ {
+        if i%2 == 0 {
+          e <- i
+        } else {
+          o <- i
+        }
+      }
+      // to make sure we close the channels, but this will be garbage collected if it was within this function
+      close(e)
+      close(o)
+      q <- 0
+    }
+   ```
+   * running the program with race flag 9:20
+  * Comma ok idiom
+  * Fan In
+  * Fan Out
+  * Context
