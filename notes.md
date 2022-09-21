@@ -1,6 +1,9 @@
 # repo
 federicoleon/golang-tutorial
 https://github.com/federicoleon
+
+#Todo
+* https://go.dev/doc/faq
 # Timelines
 
 1) why pass *domain.user
@@ -243,6 +246,7 @@ https://pkg.go.dev/std => std packages
     ```
   * Fan Out & throttling
     * 3:17, closure concept
+    * https://go.dev/doc/faq#closures_and_goroutines
     * https://go.dev/play/p/iU7Oee2nm7, launches n go routines
     * throttling go routines
     ```
@@ -256,3 +260,30 @@ https://pkg.go.dev/std => std packages
     * 2:07 (https://go.dev/blog/context), In Go servers, each incoming request is handled in its own goroutine. Request handlers often start additional goroutines to access backends such as databases and RPC services. The set of goroutines working on a request typically needs access to request-specific values such as the identity of the end user, authorization tokens, and the request’s deadline. When a request is canceled or times out, all the goroutines working on that request should exit quickly so the system can reclaim any resources they are using
 
 * Error Handling
+  * understanding
+    * go does not have exceptions, 1:16
+      https://go.dev/doc/faq#exceptions
+      https://blog.golang.org/error-handling-and-go
+  * checking errors
+  * printing and logging
+    You have a few options to choose from when it comes to printing out, or logging, an error message:
+    * fmt.Println()  -> std o/p
+    * log.Println()  -> std o/p or write to file
+    * log.Fatalln()  -> os.exit()/shutting down
+    * log.Panicln()
+      ○ deferred functions run
+      ○ can use “recover”
+    * panic()
+    * 5:24, use defered functions => defer foo()
+  * Recover
+    * https://go.dev/blog/defer-panic-and-recover
+    * defer ensures that the function runs, 2:20
+    * Recover is only usefulf insided deffered functions, 6:05
+  * Errors with info
+
+* Go doc, writting documentation
+  * introduction
+  * go doc
+  * godoc
+  * godoc.org
+  * writting documentation
