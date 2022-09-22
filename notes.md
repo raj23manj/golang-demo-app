@@ -485,3 +485,8 @@ https://pkg.go.dev/std => std packages
         - 1:25, talks about varaible going out of scope once function returns, but the variable `i` is moved to heap due to closure
       - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/01-goroutines/06-closure/main.go
         - closure example why we need to pass values to function instead of referencing them from nested function using closure
+        - By the time go routines got a chance to execute the main goroutine runs the loop and waits so i is 4
+        - To avoid this, pass the value to the function
+        - Go routines work on the current value that they have, to make this work properly pass the value
+
+  * Go Scheduler
