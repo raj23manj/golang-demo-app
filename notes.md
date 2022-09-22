@@ -290,6 +290,8 @@ https://pkg.go.dev/std => std packages
 
 
 # Concurrency in GO: Deepak
+  * git clone https://github.com/andcloudio/go-concurrency-exercises.git
+  * go-concurrency-exercises-ind
   * Introduction
     * Processes & Threads
       - Process
@@ -417,3 +419,69 @@ https://pkg.go.dev/std => std packages
         - Many goroutines can execute commands in the context of Single OS thread.
         - The OS scheduler schedules the os threads, and the goruntime schedules the goroutines on the os thread.
         - os-go-runtime-scheduler.png
+
+    * Exercise-Hello
+      * use of sleep
+        time.Sleep(1 * time.Millisecond)
+      * goroutine function call
+      * goroutine with anonymous function
+      * goroutine with function value call
+      * wait for goroutines to end
+      * https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/01-goroutines/01-hello/main.go
+
+    * Exercise-ClientServer
+     * https://github.com/andcloudio/go-concurrency-exercises/tree/master/01-exercise-solution/01-goroutines/02-client-server
+
+    * Waitgroups:
+      - different possible outcome of the prog:
+         ```
+           func main() {
+             var data int
+
+             go func() {
+               data++
+             }()
+
+             if data == 0 {
+               fmt.Println("value %v", data)
+             }
+           }
+
+           o/p(any of below):
+           1) nothing is printed. If child Goroutine finishes before main Go routine it increments the value
+           2) the value is 0, if main go routine executes before child Go routine
+           3) value is 1, ig child goroutine gets scheduled in between data === 0 and next line of execution
+         ```
+      - Wait Group
+        ```
+          var wg sync.WaitGroup
+          wg.Add(1) // indicates the number of go routines we are creating
+
+          go func() {
+            defer wg.Done() // need to call same number of times as we add in main go routine.
+          }
+
+          wg.Wait()
+        ```
+      - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/01-goroutines/03-join/main.go
+
+    * Goroutine & Closure
+      - Goroutines execute within the same address space they are created in
+      - They can directly modify varaibles in the enclosing lexical block
+      ```
+        func inc() {
+          var i int
+
+          go func() {
+            i++
+            fmt.Println(i)
+          }()
+
+          return
+        }
+      ```
+      - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/01-goroutines/05-closure/main.go
+        - closure function, nested functions
+        - 1:25, talks about varaible going out of scope once function returns, but the variable `i` is moved to heap due to closure
+      - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/01-goroutines/06-closure/main.go
+        - closure example why we need to pass values to function instead of referencing them from nested function using closure
