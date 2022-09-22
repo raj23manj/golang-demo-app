@@ -287,3 +287,87 @@ https://pkg.go.dev/std => std packages
   * godoc
   * godoc.org
   * writting documentation
+
+
+# Concurrency in GO: Deepak
+  * Introduction
+    * Processes & Threads
+      - Process
+        - Process is an instance of the running program
+        - Process provides environment for program to execute
+        - When the program is executed the os creates a process and allocates memory in the virtual address space
+        - The virtual address space will contain code segment which is a complied machine code, there is a data region which contains global variables, Heap segment for dynamic memory allocation and stack is used for storing local variables of a function..
+        ```
+          ----------------
+          |     stack |  |
+          ------------v---
+          |              |
+          |              |
+          ------------^---
+          |      Heap |  |
+          ----------------
+          |      Data    |
+          ----------------
+          |      Code    |
+          ----------------
+
+        ```
+      - Threads
+        - Threads are smallest unit of execution that CPU accepts
+        - Process has atleast one thread, that is the main thread
+        - Process can have multiple threads
+        - Threads share the same adress space
+        ```
+          ---------------
+          |      Heap    |
+          ----------------
+          |      Data    |
+          ----------------
+          |      Code    |
+          ----------------
+          |              |
+          |  t1      t2  |
+          | stack     s  |
+          | registers r  |
+          | PC        pc |
+          |              |
+           ---------------
+        ```
+        - Threads run independent of each other
+        - OS scheduler makes scheduling decisions at the thread level and not process level
+        - Threads can run concurrently or parallel taking turns on individual core
+        - Thread states
+          - When process is created it is put in the ready Q ina a `runnable state`
+          - Once the os scheduler schedules the thread, it is given a time slice
+          - if time slice is expired then that thread is preempted and placed back to ready Q
+          - If a thread gets blocked on I/O or event wait operation like read/write on disk, network operation, db operation, or waiting for an event from other processes then it is placed in the waiting Q until the I/O operation is completed. Once the I/O operation is completed the thread is placed back to ready Q.
+
+        - Context switches
+          - they are considered to be very expensive.
+          - the cpu spends time in copying the context of the current executing thread into the memory and restoring the context of the next executing thread.
+          - The context switiching will be a waste of time as it does switching instead of executing.
+          - Context switching of the threads of a same process is cheap compared to context switching threads of different process
+          - context-switching.png
+          - If we have many processes per process and try to scale then it will lead to `C10K` problem
+          - C10K Problem
+            - Scheduler allocates a process a time slice for execution on CPU core
+            - This cpu time slice is divided equally among threads
+            - c10k.png
+            - if time slice alloted for a process is 10ms by the scheduler
+              - number of threads = 2, then thread time slice is 5ms
+              - number of threads = 5, then thread time slice is 2ms
+              - number of threads = 1000, then thread time slice is 10 nanoseconds, in this case the cpu does only context switching and does not execute.
+            - To do a job, a thread needs minimum time slice of 2ms(milliseconds)
+            - To complete one cycle of exection for number of threads, each thread has to wait n seconds for it execution
+              ```
+              | scheduler period | Number of threads | Thread time slice |
+                      2s                  1000                2ms
+                      20s                 10000               2ms
+              ```
+            - Bigger the time slice for the thread, slower is the application
+          - Fixed Stack size:
+            - The OS gives a fixed stack size of 8mb for a thread(on my machine)
+            - The actual stack size depends on the hardware
+            - If I have 8gb of memeory, in therory I can create only 1000 threads
+               8GB/8mb = 1000
+            - The fixed stack size limits the amount of threads that we create to the amount of menmory we have
