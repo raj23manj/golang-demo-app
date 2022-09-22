@@ -388,3 +388,32 @@ https://pkg.go.dev/std => std packages
         - Locking reduces parallelism. Locks force to execute threads sequentially.
         - inappropriate use of locks leads to deadlock.
         - deadlock.png
+
+  * Goroutines
+    * Goroutines
+      - There are limitation with threads, with the actual number of threads we can create is limited, sharing of memory leads to lot of complexity, with concurrently executing threads.
+      - Communicating Sequential Processes(CSP) Tony Hoare
+        - Each process is built for sequential execution, every process has a local state. The process operates on that local state
+        - Data is communicated between processes withou sharing memory, but we send a copy of the data to the other processes. Since there is no sharing of memory there will be no race condition or deadlocks
+        - Scale easily, as each process run independently. If the computation is taking more time, we can add more processes of the same type.
+      - Go's Concurrency Tool Set
+        - goroutines
+        - channels (communication)
+        - select (multiplex the channels)
+        - sync package(classical sync tools like mutex)
+      - `Goroutines`
+        - they are user space threads(like green threads) managed by go runtime
+        - Go runtime is part of the executable that is built in
+        - Goroutines are extremely lightweight.
+        - Goroutines starts with `2KB` of stack, which grows and shrinks as required. Where as threads need 8mb(based on hardware)
+        - Low CPU overhead - three instructions per function call.
+          - the amount of cpu instructions to create a goroutine is very less
+        - Can create hundreds of thousands of goroutines in the same address space.
+        - Channels are used for communication of data between goroutines. Sharing of memory can be avoided.
+        - Context switching between goroutines is much cheaper that thread context switching, as go routines have less state to store.
+        - Go runtime can be more selective in what data is persisted for retrieval, how it is persisted, and when the persisiting needs to occur.
+        - Go Runtime creates OS threads
+        - Goroutines runs in the context os OS thread.
+        - Many goroutines can execute commands in the context of Single OS thread.
+        - The OS scheduler schedules the os threads, and the goruntime schedules the goroutines on the os thread.
+        - os-go-runtime-scheduler.png
