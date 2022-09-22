@@ -371,3 +371,20 @@ https://pkg.go.dev/std => std packages
             - If I have 8gb of memeory, in therory I can create only 1000 threads
                8GB/8mb = 1000
             - The fixed stack size limits the amount of threads that we create to the amount of menmory we have
+
+        - What are the limitations of thread ?
+          * Fixed stack size
+          * C10K problem, as we scale up the number of threads, scheduler cycle increases and application can become less responsive.
+
+    * why concurrency is hard
+      * shared memory
+        - Threads communicate between each other by sharing memory.
+        - Threads share the heap and data region of the process
+        - sharing the memory between threads creates a lot of complexity with concurrently executing threads.
+        - Cocnurrent access to shared memory by two or more threads can lead to `Data Race` and the outcome can be Un-deterministic.
+        - example, 1:40
+      * Memory Access Synchronization
+        - we need to guard the access to shared memory so that a thread gets exclusive access at a time.(mutex locks / mutually exclusive locks)
+        - Locking reduces parallelism. Locks force to execute threads sequentially.
+        - inappropriate use of locks leads to deadlock.
+        - deadlock.png
