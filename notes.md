@@ -529,5 +529,27 @@ https://pkg.go.dev/std => std packages
         - Synchronous system calls reduces parallelism.
         - sync-systemcalls.png
 
-    * DeepDive - Go Scheduler - Context switching due to Asynchronous system call
+    * DeepDive - Go Scheduler - Context switching due to Asynchronous system(network system call, http system call) call
+      - what happens in general when asynchronous system calls are made?(scenarios below)
+        - Asynchronous system call happens when the file descriptor(this is used for doing network I/O operations) is set to non-blocking mode.
+        - If the file descriptor is not ready(if the socket buffer is empty for read operation or the socket buffer is full for write operation), system call does not block, but returns an error. If this happens, the application has to retry in a later point in time.
+        - Asynchronous I/O increases the application complexity.
+        - The application has to create a event loop and setup callbacks or it has to maintain a table mapping the file descriptor and the function pointer.(Go routines have these) It has to keep track of how much data was read last time or how much data was returned last time. All this add up to complexity of the application. If not implemented properly, it makes all in efficient.
+      - How does Go handle the above scenarios?
+        - Netpoller
+          - Go uses netpoller, it is an abstraction built in syscall package
+          - syscall package uses netpoller to conver asynchronous system calls to blocking system call.
+          - When a goroutine makes asynchronous system call and the file descriptor is not ready, then the Go Scheduler uses netpoller OS thread to park that goroutine.
+          - netpoller uses interface provided by OS to do polling on the file descriptor. It has the blocked goroutines in its data structure.
+            - the netpoller uses
+              * kqueue (Mac OS) to do polling on the file descriptor
+              * epoll(Linux)
+              * iocp(windows)
+          - netpoller gets notification from OS, when the file descriptor is ready for I/O operations.
+          - netpoller notifies goroutine to retry I/O operations, if there are any in its data structure.
+          - To retry I/O operations, the Go routine is made runnable again and is moved from netpoller to one of the running processors LRQ
+          - This way the complexity of managing asynchronous system call is moved from Application to Go Runtime, which manages it efficiently.
+          - This way of using the netpoller, no extra threads are created for execution, but uses existing netpoller thread to get asynchronous call executed.
+          - netpoller.png
+
     * DeepDive - Go Scheduler - Work Stealing
