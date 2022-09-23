@@ -519,5 +519,15 @@ https://pkg.go.dev/std => std packages
         - scheduler-arch.png
 
     * DeepDive - GO Scheduler - Context switching due to Synchronous system call
+      - what happens when a synchronous system call is made? like read/write to a file with sync flag set.
+        - synchronous system calls wait(block) for I/O operations to complete.
+        - when this happens, OS thread is moved out of the CPU to waiting queue for I/O operations to complete.
+        - The scheduler won't be able to schedule any other Go routines on this thread.
+        - The the OS runtime creates a new thread(or take a thread from thread pool) and moves all the LRQ of the blocked thread and attaches it to the new thread and attaches the new thread to the core.
+        - Once the blocked thread goroutine finishes its sync operation, it will be move to one of the LRQ of the running thread(processor).
+        - The blocked thread detached, will be put to sleep and placed in the thread pool. It will be utilized in future for same scenario.
+        - Synchronous system calls reduces parallelism.
+        - sync-systemcalls.png
+
     * DeepDive - Go Scheduler - Context switching due to Asynchronous system call
     * DeepDive - Go Scheduler - Work Stealing
