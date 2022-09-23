@@ -553,3 +553,12 @@ https://pkg.go.dev/std => std packages
           - netpoller.png
 
     * DeepDive - Go Scheduler - Work Stealing
+      - Work stealing helps to balance the goroutines acrss all the logical processors
+      - work gets distributed and gets done more efficiently
+      - work stealing rule
+        - if there is no goroutines in LRQ
+          - try to steal from other logical processors.
+          - if not found, check the global runnable queue for G
+          - if not found check the net poller
+          - this repeats as cycle.
+        - The logical processor randomly pick from other logical processors and steals half of it's G
