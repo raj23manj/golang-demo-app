@@ -490,3 +490,34 @@ https://pkg.go.dev/std => std packages
         - Go routines work on the current value that they have, to make this work properly pass the value
 
   * Go Scheduler
+    * DeepDive - Go Scheduler
+      - it part of the Go runtime, and runtime is part of the executable of the application
+      - also know M:N scheduler
+      - It runs in the user space
+      - Go scheduler used OS threads to schedule goroutines for execution
+      - Go routines runs in the context of OS threads.
+      - Go Runtime create a number of worker OS threads, equal to `GOMAXPROCS`
+      - `GOMAXPROCS` default value is the number of processors on the machine
+      - Go Scheduler distributes runnable goroutines over multiple worker OS threads.
+      - At any time, N Goroutines could be scheduled on M OS threads that runs on at most GOMAXPROCS number of processors.
+      - As of GO 1.14 Go scheduler implements asynchronous preemption, before that it was co-operative premption.
+      - asynchronous preemption prevents long running Goroutines from hogging onto CPU, that could block other GoRoutines
+      - The asynchronous preemption is triggered based on a time slice. When a goroutine is running for `more that 10ms(milli)`, Go will try to preempt.
+      - Goroutine States similar to threads, 2:49
+        - When Goroutinr is created, it will be in runnable state
+        - When executing, it goes to executing state when the goroutine is scheduled on a thread. If not completed with in the time slice, it is preemted and placed back into runnable state
+        - If the Go routine is wating for blocked on a channel, blocked on a sys call, waiting for a mutex lock, I/O or event wait to be completed, it is placed under waiting state. Once the waiting operation is complete it is moved back to runnable state.
+        - Goroutines-states.png
+      - Go Runtime architecture 3:21
+        - For a Cpu core, go runtime creates a Thread M
+        - For a thread M, go runtime creates a Logical processor(with stack, head, data regions) P
+          - The Logical processor holds the context for scheduling, which can be seen as a local scheduler running on a thread.
+          - Each processor P has a local run queue(LRQ), where runnable goroutines are queued.
+        - G represents a goroutine running on the OS thread
+        - There is a Global Run Queue(GRQ), once LRQ is exhausted, the processor will pull go routines from GRQ.
+        - New Goroutines are added to the end of the GRQ
+        - scheduler-arch.png
+
+    * DeepDive - GO Scheduler - Context switching due to Synchronous system call
+    * DeepDive - Go Scheduler - Context switching due to Asynchronous system call
+    * DeepDive - Go Scheduler - Work Stealing
