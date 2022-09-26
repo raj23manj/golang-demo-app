@@ -761,3 +761,66 @@ https://pkg.go.dev/std => std packages
     - Goroutines that gets blocked on send or recv are parked in sendq or recvq
     - Go scheduler moves the blocked goroutines, out of OS thread
     - Once channel operation is complete, goroutine is moved back to local run queue
+
+* Select
+  - select-scenario.png
+  - useful when we can do operation on channel which ever is ready and don't worry about the order?
+    -
+      ```
+        select {
+          case <-ch1:
+              // block of statements
+          case <-ch2:
+              // block of statements
+          case ch3 <- struct{}{}
+            // block of statements
+        }
+      ```
+    - select statements is kike a switch
+    - Each cases specifies communication
+    - All channel operation are considered simultaneously, to see if any of them are ready
+    - Select waits until some case is ready to proceed, or else the entire select statement is going to block until some case is ready for the communication.
+    - when one of the channel is ready, that operation will proceed, and execute the associated block of statements.
+    - if multiple channels are ready, select will pick one at random and execute
+    - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/03-select/01-select/main.go
+    - Select is also very helpful in implementing
+      - timeouts
+        - select waits untik there is event on channel or until timeout is reached.
+        - The time.After function takes in a time duration and return a channel that will run in background as a go routine and will send the current time after the duration you provide it.
+        ```
+          select {
+            case v := <-ch:
+              fmt.Println(v)
+            case <- time.After(3 * time.Second):
+               fmt.Println("timeout")
+          }
+        ```
+        - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/03-select/02-select/main.go
+      - non-blocking communication(with default case)
+        - send or receive on a channel, but avoid blocking if channel is not ready
+        - Default allows you to exit a select block without blocking.
+        ```
+          select {
+            case m := <- ch:
+              fmt.println("received message", m)
+            default:
+              fmt.println(" no received message")
+          }
+        ```
+        - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/03-select/03-select/main.go
+      - Some scenarios to consider
+        - Empty select statement will block forever
+          `select{}`
+        - Select on nil channel will block forever.
+          ```
+            var ch chan string
+            // not make here hence nil
+            select {
+              case v := <-ch:
+              case ch <- v:
+            }
+          ```
+
+
+
+
