@@ -649,3 +649,25 @@ https://pkg.go.dev/std => std packages
         - writing to a closed channel, leads to panic
         - closing a channel more than once, leads to panic
       - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/02-channel/05-channel/main.go
+
+  * Deep Dive Channel
+    - To create a channel we use `ch := make(chan int, 3)`, internally channels are represented by `hchan` struct.
+    - hchan-struct.png
+    - The hchan structhas a `mutex lock` field, any goroutine doing a channel operation must first aquire a mutex lock first.
+    - It has `buf` field which stores actual data. This is used only for the buffered channels.
+    - `dataqsiz` field is the  size of the buffer.
+    - `qcount` indicates the total data in the queue.
+    - `sendx and recvx` indicates the current index of the buffer, form where it can send data and receive data.
+    - `sendq & recvq` are used to store the blocked goroutines.
+    - `wait q` is a struct represented by the `sudog` struct.
+    - sudog-struct.png
+       - `g`, represents the pointer to the goroutine
+       - `elem` represents the ponter to memeory which contains the value to be sent or to which the received value will be returned to.
+    - `ch := make(chan int,3)`
+      - when make is called, hchan struct is allocated in the heap
+      - make() returns a pointer to it
+      - Since `ch` is a pointer, it can be between functions for send and receive.
+    - channel-allocation.png
+
+  * Send and Receive on buffered channels
+    -
