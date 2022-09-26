@@ -723,6 +723,15 @@ https://pkg.go.dev/std => std packages
 
 
   * Buffer Empty
+    - consider same prog above, assume G2 will execute first anf try to receive from a empty channel.
+    - The buffer is empty, and G2 is called a receive on an empty channel and blocked
+    - Now G2 will create a sudo struct, and enques itself onto to `recvq` with `G` pointing to G2 and `elem` pointing to the stack variable `v`.
+    - buffer-empty-recv.png
+    - G2 call to scheduler to a call to gopark(), the scheduler moves the G2 from the os thread and does a context switching with next go routines in the LRQ.
+    - Now G1 comes along and tries to send a value on to the channel, first it checks if there are any go routines waiting in the `recvq` of the channel and it finds G2.
+    - Now G1 copies the value into the variable of the G2 stack directly. This is the only scenario where one goroutine acces the stack of another goroutine. This is done for performance reasons so that G2 does not have to come later and perform any channel operations, and there is one fewer memory copy.(G1-accessing-g2-stack.png)
+    - G1 pops G2 forom the `recvq` and puts it in the runnable state, by calling the goready(g2) function.
+    - Now G2 moves back to local run queue, and gets schedules by the scheduler on the OS thread for a chance to run.
 
   * Unbuffered channel
 
