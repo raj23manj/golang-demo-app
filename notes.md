@@ -734,4 +734,23 @@ https://pkg.go.dev/std => std packages
     - Now G2 moves back to local run queue, and gets schedules by the scheduler on the OS thread for a chance to run.
 
   * Unbuffered channel
-
+    - Send on a unbuffered channel
+      - When sender goroutine wants to send a values
+      - if there is corresponding receiver waiting in recvq
+        - Sender will write the value directly into the receiver goroutine stack variable
+        - Sender goroutine puts the receiver goroutinr back to runnable state.
+      - If there is no receiver goroutine in recvq
+        - Sender gets parked into the sendq
+        - Data is saved in the elem field in sudog struct.
+        - Receiver comes and copies the data
+        - Puts the sender to runnable state again
+    - Receive on unbuffered channel
+      - Receiver goroutine wants to receive value
+      - if it find a goroutine in waiting sendq
+        - Receiver copies the value in elem field to its variable
+        - puts the sender goroutine to runnable state.
+      - if there was no sender goroutine in sendq
+        - Receiver gets parked into the `recvq`
+        - Reference to variable is saved in the elem filed in sudog struct
+        - Sender comes and copies the data directly to receiver stack variable
+        - puts the receiver to runnable state.
