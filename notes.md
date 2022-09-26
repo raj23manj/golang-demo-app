@@ -563,7 +563,7 @@ https://pkg.go.dev/std => std packages
           - this repeats as cycle.
         - The logical processor randomly pick from other logical processors and steals half of it's G
 
-  * Channels
+  * Channels(hchan struct represents a channel)
     - Channels are used to communicate data between Goroutines
     - Channels help in synchronization of the execution of the go routines
     - One Goroutine can let know another Goroutine in what stage they are in and synchronize their execution
@@ -754,3 +754,10 @@ https://pkg.go.dev/std => std packages
         - Reference to variable is saved in the elem filed in sudog struct
         - Sender comes and copies the data directly to receiver stack variable
         - puts the receiver to runnable state.
+
+  * Summary
+    - hchan struct represents the channel
+    - it contains circular ring buffer and mutex lock
+    - Goroutines that gets blocked on send or recv are parked in sendq or recvq
+    - Go scheduler moves the blocked goroutines, out of OS thread
+    - Once channel operation is complete, goroutine is moved back to local run queue
