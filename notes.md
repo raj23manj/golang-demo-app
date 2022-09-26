@@ -670,4 +670,59 @@ https://pkg.go.dev/std => std packages
     - channel-allocation.png
 
   * Send and Receive on buffered channels
-    -
+
+    ```
+      ch := make(chan int, 3)
+      // G1 - goroutine
+      func G1(ch chan<- int) {
+        for _, v := range []int{1,2,3,4} {
+          ch <- v
+        }
+      }
+
+      // G2 - goroutine
+      func G2(ch chan<- int) {
+        for v := range ch {
+          fmt.Println(v)
+        }
+      }
+    ```
+    - init-send-channel.png
+    - working
+      - G1 aquires the lock first
+      - G1 enques the value on to the queue(it is a memory copy, element is copied into the buffer)
+      - G1 increments the value of sendx to 1
+      - G1 releases the lock
+      - G1 go aheads with it other computation
+      - G2 comes, aquires the lock first
+      - G2 deques the value from the buffer queue and copies it to variable `v`
+      - G2 increments the value of recvx
+      - G2 releases the lock
+      - G2 go aheads with it other computation
+      - Points to note:
+        - There is no memory sharing between Goroutines
+        - Goroutines copy elements into and from hchan
+        - hchan is protected by by mutex lock
+
+  * Buffer Full
+    - Lets assume with the above code itself,
+      - with G1, the buffer is is full with 3,2,1
+      - now G1 wants to send another value on to the buffer, A value 4 after aquiring a lock
+      - since the buffer is full, G1  will blocked and will wait for receive.
+        - how does block happen ?
+          - G1 creates a a sudo G struct, and `G` element will hold the refference to the goroutine G1 and the value to be sent will be saved in the `elem` field. This structure is enqued inot the `sendq` list.
+          - buffer-full-send.png
+          - G1 calls to scheduler to a call to gopark(), the scheduler will move G1 out of execution on the OS thread, and other Go routines on the LRQ will get scheduled on the OS thread.
+          - Now G2 comes along and tries to receive data from the channel.
+            - It first aquires a lock,
+            - deques the element(1) from the queue and copies the elemnt into the variable `v` and pops the waiting G1 from the `sendq` and enques the value saved in the `elem` field
+            - important, G2 is the one which enques the value on to the buffer on which G1 was blocked. This is for optimisation as G1 does not have to do any channel operation again.
+            - Once enques is done by G2, it will set the state of G1 as runnable again, this is done by G2 calling goready(G1) function
+            - Then G1 is moved to the runnable state and then gets added to the local run queue. G1 will get scheduled by the OS thread when it gets a chance to execute.
+            - buffer-full-recv.png
+
+
+  * Buffer Empty
+
+  * Unbuffered channel
+
