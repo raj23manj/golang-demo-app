@@ -821,6 +821,122 @@ https://pkg.go.dev/std => std packages
             }
           ```
 
+* Sync Package
+  * Mutex
+    - When to use channels and when to use mutex ?
+      - Channels
+        - Passing copy of data
+        - Distributing units of work
+        - Communicating asynchronous results
+
+      - Mutex
+        - Caches, registries and state which are big to be sebt over channels.
+        - When we want the access to this data should be concurrent safe, so that only one Go routine has a access to the data at a time.
+        - Used for protection of shared resource
+        - sync.Mutex - provide Exclusive access to a shared resource, by aquirina a lock. Once completed task need to unlock.
+        - The code between the lock and unlock is called `critical section`
+        ```
+          mu.Lock()
+          balance += amount
+          mu.Unlock()
+
+          or
+
+          mu.Lock()
+          defer mu.Unlock()
+          balance += amount
+        ```
+        - Read/Write Mutex
+          - If a Goroutine is either reading or writing to the shared memory, then we can use a `RWMutex`
+          - sync.RWMutex allows multiple reades, writers get exclusive lock.
+          ```
+              // write
+              mu.Lock()
+              balance += amount
+              mu.unlock()
+
+              // Read
+              muRLock()
+              defer mu.RUnlock()
+              return balance
+          ```
+          - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/01-mutex/main.go
+          - RWMutex: https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/02-mutex/main.go
+
+  * Atomic
+    - sync.Atomic
+    - to perform low level atomic operations on memory.
+    - It is a Lockless opreations.
+    - Used for atomic operations on counters
+    ```
+      atomic.AddUnit64(&ops, 1) // incerement the value, and be called by multiple goroutines
+      v := atomic.LoadUint64(&ops) // to read value
+    ```
+    - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/11-atomic/main.go
+
+  * Conditional Variables
+    - `sync.Cond`
+    - Condition Variables is one of the synchronization mechanisms
+    - A condition varaible is basically a container of goroutins that are waiting for a certain condition
+    - How to make a goroutine wait till some condition/event occurs?
+      - we need some way to make goroutine suspend while watiting
+      - we need some way to signal the suspended goroutine when particular event has occured.
+      - we can use channels but it will be one goroutine waiting for for an event on an channel.
+      - what if there are multiple goroutines waiting on multiple conditions/event?
+        - Conditional variable are type
+          `var c *sync.Cond`
+        - we use constructor method sync.NewCond() to create a conditional variable, it takse sync.Locker interface as input, which usually is `sync.Mutex`
+           ```
+              m := sync.Mutex{}
+              c := sync.NewCond(&m)
+           ```
+        - `sync.Cond` packages has three methods
+          - c.Wait()
+            - suspends the execution of the calling goroutine
+            - automaically releases the lock `c.L`
+            - Wait cannout return unless awoken by Broadcast or signal
+            - Wait lock c.L before returning
+            - Caller should check again, because c.L is not locked when wait first resumes, the caller typically cannot assume that the condition is true when Wait returns. Instead, the caller should Wait in a  loop
+            ```
+              c.L.Lock()
+              for !condition() {
+                c.Wait
+              }
+              ... make use of condition...
+              c.L.Unlock()
+            ```
+          - c.Signal()
+            - `func (c *Cond) Signal()`
+            - Signal wakes one goroutine waiting on c, if there is any.
+            - Signal finds goroutines that has been waiting the longest and notifies that.
+            - it is allowed but not required for the caller to hold c.L during the call
+          - c.Broadcast()
+            - `func (c *Cond) Broadcast()`
+            - Broadcast wakes all goroutines waiting on c.
+            - It is allowed not required for the caller to hold c.L during the call
+          - cond-variables.png
+            - G1, go routine take the lock for entire process
+            - when the sharedRsc is empty, call to wait implicitly releases the lock and suspends the goroutine
+            - Now G2(producer), comes and aquires the lock
+            - fills the shared variable
+            - notifies the waiting goroutine usinf c.signal
+            - then releases the lock.
+            - G1 on reciving the signal, the goroutine is put back to runnable state and wait() aquires the lock again, then checks the condition
+            starts processing the code again if not empty
+            - at the end release the locks
+          - multiple goroutines waiting on a condition, then use broad cast.
+            - multiple-goroutines-broadcast-con-variables.png
+          - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/21-cond/main.go
+          - multiple goroutines: https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/22-cond/main.go
+
+  * Sync Once
 
 
+  * Sync Pool
 
+
+* Race Detector
+
+* Web Crawler
+
+* Concurrency Patterns
