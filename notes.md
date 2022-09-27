@@ -930,9 +930,24 @@ https://pkg.go.dev/std => std packages
           - multiple goroutines: https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/22-cond/main.go
 
   * Sync Once
-
+    - `sync.Once`
+    - Run one-time initialization functions
+    - `once.Done(funcValue)` => recieves a function
+    - it ensure that only one call to do, ever calls the function that is passed in, even when called from different Go-routines
+    - This is pretty useful for in the creation of singleton objects or calling initialization functions which multiple goroutines depends on, but we want the initialization function to run only once.
+    - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/31-once/main.go
 
   * Sync Pool
+    -  pool is commonly used to constrain the creation of expensive resources like DB connections, network connections and memory(file, bytes writer)
+    - we will maintain a pool of fixed number of instances of the resource.
+    - Those resources from the pool will be resused rather than creating new instances each time when a caller requires them
+    - the caller calls the get() method, when ever he needs access to the resource
+      `b := bufPool.Get().(*bytes.Buffer)`
+    - The Get() method first check if there are any instance available in the pool if found returns, else create a new instance and returns to the caller
+    - when finished with the usage the caller call the Put() method, which places the instance back to the pool and can be reused by other processes
+      `bufPool.Put(b)`
+    - In this way we can create a constrain on creatin of expensive resources
+    - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/04-sync/41-pool/main.go
 
 
 * Race Detector
