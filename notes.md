@@ -951,7 +951,65 @@ https://pkg.go.dev/std => std packages
 
 
 * Race Detector
+  - Go provides race detedtor tool for finding race conditions in Go code.
+  ```
+    $ go test -race mypkg // test the package
+    $ go run -race mysrc.go // compile and run the program
+    $ go build -race mycmd // build the command
+    $ go install -race mypck // install the package
+  ```
+  - Binary enable
+    - Binary needs to be race enabled
+    - When racy behaviour is detected a warning is printed
+    - Race enabled binary will be 10 times slower and consumes 10 times more memory, as it inserts code to keep track of memory
+    - not to be be enabled in production
+    - Integration tests and load test are good candidates to test with binary with race enabled
+    - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/01-exercise-solution/05-race/main.go
 
 * Web Crawler
 
 * Concurrency Patterns
+  * Pipelines
+    - used to process a stream or batches of data
+    - pipeline is a serires of stages that are connected by channels
+    - each stage is represented by a Goroutine
+    - Each stage, take data in from an inbound channel, perform an operation on it and send data out on outbound channel.
+    - Using pipeline we can seperate the concerns of each stage and process individual stage concurrently.
+    - Stages could consume and return same type
+      `func square(in <-chan int) <-chan int {}`
+      - The above enables the composability of the pipeline
+        `square(square(generator(2,3)))`
+      - see the excersice video for a diff implementation using `for range{}`
+        - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/02-exercise-solution/02-pipeline/01-pipeline/main.go
+      - using compose also
+
+  * Fan out & Fan in
+    - fan-outandfan-in.png
+    - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/02-exercise-solution/02-pipeline/02-pipeline/main.go
+
+  * Cancelling Groutines
+    - In Real Pipeline
+      - Real pipelines, Receiver stages may only need a subset of values to make progress.
+      - A stage can exit early because an in bound value represents an error in an earlier stage
+      - Receiver should not have to wait for the remanining values to arrive
+      - we want earlier stages to stop producing values that later stages don't need.
+      - goroutine-leak-fanin-fanout.png
+      - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/02-class-codewalk/01-pipeline/main.go
+      - How can we signal to goroutine to abandon what they are doing and terminate?
+        - we can send a cancellation signal to the goroutines
+        - Pass a read-only `done` channel to goroutine
+        - close the channel, to send broadcast signal to all goroutunes
+        - on receiving the signal on done channel, Goroutines needs to abandon their work and terminate
+        - we use `select` to make send/receive operation on the channel pre-emptible, by multiplexing receive on done channel.
+        - So the Goroutines that are blocked on the channel send operation, if they receive the signal from the done done channel, then they will unblock and return from the goroutine function.
+        ```
+          select {
+            case out <- n:
+            case <- done:
+              return
+          }
+        ```
+        - https://github.com/raj23manj/go-concurrency-exercises-ind/blob/master/02-exercise-solution/02-pipeline/03-pipeline/main.go
+        - A way to see if the go routines have terminated and avoid leaks, 3:45
+          - allow the maing goroutine to sleep for a while untill all goroutines get terminated. `time.Sleep(10 * time.Millisecond)`
+          - `runtime.NumGoroutines` => returns the number of active goroutines. Only to check
