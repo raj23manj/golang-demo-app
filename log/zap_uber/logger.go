@@ -21,6 +21,9 @@ func (lumberjackSink) Sync() error {
 	return nil
 }
 
+// kibana ecs
+// https://www.elastic.co/guide/en/ecs-logging/go-zap/current/setup.html
+
 // https://gist.github.com/rnyrnyrny/282fe705d6e8dc012e482582d7c8ec0b
 func init() {
 

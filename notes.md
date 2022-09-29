@@ -26,7 +26,7 @@ https://github.com/federicoleon
 7) gin.new => returns a gin instance without any middle attached,
   * Http framework 7:20
   * gin.Default has loggers & recovery middleware attached
-8) How to fect query params http framework
+8) How to fetch query params http framework
   * 16:50
 9) Marshal, takess a input interface and create a valid json string
   * 12:26 defining our domain structs
@@ -51,11 +51,19 @@ https://github.com/federicoleon
   * Mocking headers 54:07
 14) From linear to concurrent
   * implementation of concurrent api, 11:17 channels block, there has to be another go routine to accept or send
-    if not will throw erreo all goroutines are assleep - deadlock!
+    if not will throw error all goroutines are as sleep - deadlock!
   * buffered channels, 16:14, 21:00, if 3 is given to make(chan string, 3) 3 items will be buffered and for the fourth one
     it will wait untli some go routine recieves, else throws an error deadlock!
-
-
+  * sending array of structs in channels 52:48
+  * Testing concurrent models(concurrency testing)
+    - 7:45, listen from channel for results
+    - sending error results on channel, 23:00
+    - send values to input channel and closing the channle, 28:00
+  * How to limit Concurrency, (throtelling)
+     - using buffered channels, 10:15 > (18:05 specific limit throtelling to github)
+     - https://github.com/raj23manj/golang-microservices-mine/blob/main/concurrency/main.go
+  * How to use mutex
+    -
 
 # links:
 https://go.dev/ref/spec => The Go Programming Language Specification
@@ -248,6 +256,7 @@ https://pkg.go.dev/std => std packages
     * 3:17, closure concept
     * https://go.dev/doc/faq#closures_and_goroutines
     * https://go.dev/play/p/iU7Oee2nm7, launches n go routines
+    * https://play.golang.org/p/RzR3Kjrx7q, 10 go routines
     * throttling go routines
     ```
           -----------
@@ -1013,3 +1022,16 @@ https://pkg.go.dev/std => std packages
         - A way to see if the go routines have terminated and avoid leaks, 3:45
           - allow the maing goroutine to sleep for a while untill all goroutines get terminated. `time.Sleep(10 * time.Millisecond)`
           - `runtime.NumGoroutines` => returns the number of active goroutines. Only to check
+
+* Image Processing Program
+  -
+
+* Context Package
+  - In a go service, each incoming request is handled in it own goroutines. The requeset handles often start other goroutines to access backends(database, Rpc..etc) services.
+  - The set of goroutines working on a request typically needs access to request specific values. Like identity of the end user, authorization token and the request deadline
+  - When the request is cancelled by the end user or when the request is timed out, all the go routines working on that request must exit quickly, so that the system can reclamin any resources that they were using.
+  - We need a way to propogate request-scoped data down the call graph.
+  - We need a way to propogate cancellation signal down the graph.
+  - Context Pacakge
+    - Provides API's for cancelling branches of call-graph
+    - Provides a data-bag for trasporting request-scoped data through call-graph
