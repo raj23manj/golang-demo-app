@@ -4,6 +4,7 @@
  - `go mod download` to install deps
  - https://stackoverflow.com/questions/61889317/how-can-i-automatically-add-dependency-packages-to-go-mod
  - https://go.dev/doc/modules/managing-dependencies
+ - https://go.dev/blog/using-go-modules
  - https://github.com/gin-gonic/gin/issues/477
  - nodemon --exec go run main.go --signal SIGTERM
 
